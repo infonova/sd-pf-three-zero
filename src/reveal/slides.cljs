@@ -9,8 +9,8 @@
 
 (def title-slide
   [:section
-   [:h1 "K8s Config Mgmt"]
-   [:h3 "Beginners guide"]])
+   [:h1 "ops 2019"]
+   [:h3 "tale of bmw and future devplatform"]])
 
 (def intro-myself
   [:section
@@ -23,323 +23,107 @@
          [:p "@PsychodelicDad"]]]
      [:td [:img {:src "img/bearingpoint.png"}]]]]])
 
-(def intro-2
-  [:section
-   (note "!read! then -> 'but i want to be more positive about this exciting topic'")
-   [:h3 "the talk description says"]
-   [:p "[..] This talk will give a short overview of the problem space and current options to manage configuration changes."]])
+(defn make-tag [tag content]
+  (vec (cons tag content)))
 
-(def intro-positive
-  [:section
-   (note [:div
-          [:p "declarative: we tell k8s what we desire and k8s acts to transform current => desired state"]
-          [:p "we tell k8s, we want it to have 'things' -> objects"]
-          [:p "we can do this w/ my fav cmd 'kb apply'"]
-          [:p "make it so"]
-          [:p "k8s needs to know what we're talking about -> resources"]])
-   [:h3 "things i like about k8s:"]
-   [:p
-    (bulletpoints
-      ["declarative"
-       "kubectl apply"])]
-   [:img {:src "img/make-it-so.jpg" :class "fragment" :style "max-height:300px"}]])
+(defn table [[& rows :as t]]
+  (->> (for [row rows]
+         (make-tag :tr
+           (for [cell row]
+             (make-tag :td cell))))
+    (cons {:style "white-space:nowrap;"})
+    (cons :table)
+    vec))
+; current biz
 
-(def intro-of-resources-and-objects
-  [:section
-   (note
-     [:div
-      [:p "example: object of type/kind 'Deployment', a resource known to k8s"]])
-   [:pre "apiVersion: apps/v1\nkind: Deployment\nmetadata:\n  name: nginx-deployment\n  labels:\n    app: nginx\nspec:\n  replicas: 3\n  selector:\n    matchLabels:\n      app: nginx\n  template:\n    metadata:\n      labels:\n        app: nginx\n    spec:\n      containers:\n      - name: nginx\n        image: nginx:1.7.9\n        ports:\n        - containerPort: 80\n"]])
+; in tupels:
+;  * evolve/scale
+;  * demand / competition
 
-(def controller-first-encounter
-  [:section
-   [:p "we declare stuff, then..."]
-   [:img {:src "img/magical-dr-evil.jpg"}]
-   [:p "...now the state is as we desired?"]])
+; A infrastructure / OPS
+;  * private cloud / k8s / openshift / knative / hybrid cloud
+;  * long lasting, high demand
+;  * super high competition public and hybrid cloud
+;  * growing competition
 
-(def controllers-alien-meme
+(def what-we-do-present
   [:section
-   [:img {:src "img/controllers-alien.jpg"}]])
+   [:h3 "past/current 'Business'"]
 
-(def controllers-simplified
-  [:section
-   {:data-background-image "img/controllers-simplified.png" :data-background-size "contain"}
-   (note [:div
-          [:p "just a quick look"]
-          [:p "control loop"]
-          [:p "controller watches/listens desired state and monitors objects"]
-          [:p "controller acts to deliver desired state"]
-          [:p "controller acts to deliver desired state"]])
-   [:p " "]])
-   ;[:img {:src "img/controllers-simplified.png"}]])
-
-[:p "k8s is extensible. for special things:  custom resource definitions"]
-
-(def imparative-vs-declarative-operate-on
-  [:section
-   [:h3 "k8s object management"]
-   [:table {:style "white-space:nowrap;"}
+   [:table
     [:thead {:style "font-weight: bold;"}
-     [:th "technique"]
-     [:th "operates on"]
-     [:th "learning curve"]]
+     [:tr [:td "effort"] [:td "money?"] [:td "product?"]]]
     [:tbody
-     [:tr [:td "imparative commands"][:td "live objects"][:td "lowest"]]
-     [:tr [:td "imperative obj config"][:td "individual files"][:td "moderate"]]
-     [:tr [:td "declarative obj config"][:td "Directories of files"][:td "highest"]]]]])
+     [:tr {:class "fragment"} [:td "in house ops / infra"] [:td "no"] [:td "no"]]
+     [:tr {:class "fragment"} [:td "datacenter / private cloud"] [:td "yes"] [:td "meh"]]
+     [:tr {:class "fragment"} [:td "OPS (mon, log aggr., backup etc.)"] [:td "yes"] [:td "mhhh... meh"]]
+     [:tr {:class "fragment"} [:td "DevPlatform (sort of)"] [:td "yes"] [:td "meh"]]]]
+   #_(bulletpoints
+       ["in house ops / infra"
+        "datacenter / private cloud"
+        "OPS (mon, log aggr., backup etc.)"
+        "DevPlatform (sort of)"])])
 
-(def imparative-vs-declarative-kubectl
+(def current-idea
   [:section
-    [:h3 "k8s object management"]
-    [:h5 "imperative vs declarative"]
-    [:table {:style "white-space:nowrap; width:auto;"}
-     [:thead {:style "font-weight: bold;"}
-      [:th "technique"]
-      [:th "example"]]
-     [:tbody
-      [:tr [:td "imp cmd"] [:td "kubectl run nginx --image nginx"]]
-      [:tr [:td "imp obj config"] [:td "kubectl create -f nginx.yaml"]]
-      [:tr [:td ""] [:td "kubectl delete -f nginx.yaml"]]
-      [:tr [:td ""] [:td "kubectl replace -f nginx.yaml"]]
-      [:tr [:td "decl obj config"] [:td "kubectl apply -R -f configs/"]]]]])
+   [:h3 "current idea"]
+   (bulletpoints
+     ["OPS @ K8s world (to some extend 'managed K8s')"
+      "become good at this (product-ish mon/log-aggr/etc.)"
+      "embrace common interface (K8s)"
+      "DevPlatform Product"])])
 
-(def imparative-vs-declarative-recap
-  [:section
-   [:section
-    (note [:div
-           [:p "!read!click!"]
-           [:p "let k8s do what it has been made for"]])
-    [:h3 "recap: declarative cfg"]
-    (bulletpoints
-      ["forget about the HOW, the parts and infra"
-       "manipulate state by declaration of desired state"])]
-   imparative-vs-declarative-kubectl])
-
-(def imparative-vs-declarative-4
-  [:section
-   [:section
-    (note "!read! -> spare out below 'learning curve / operates on' comparison")
-    [:h3 "what we gain"]
-    (bulletpoints
-      ["git ❤ declarative approach"
-       "PR-Workflow gives you 'GitOps'"])]
-   imparative-vs-declarative-operate-on])
-
-(def sounds-ez-another-recap
-  [:section {:class "fragment"}
-   (note [:p "quick summary and CLOC (fun begins) dramatic pause -> increase pace"])
-   [:h3 "sounds doable!"]
-   [:ol
-    [:li {:class "fragment"} "Write the App"]
-    [:li {:class "fragment"} "Describe its parts using 'Kubernetes-Objects'"]
-    [:li {:class "fragment"} "kubectl apply -f config/"]]
-   [:img {:src "img/loc-msvc-demo.png" :class "fragment"}]])
-
-(def fun-begins-DRY
-  [:section
-   (note "'What if I told you' missed meme opportunity (matrix/morpheus)")
-   [:h3 "what if..."]
-   [:p "Stages"]
-   [:img {:src "img/stages.png"}]])
-
-(def fun-begins-DRY-2
-  [:section
-   [:h3 "what if..."]
-   [:p "Customizations"]
-   [:p [:img {:src "img/gopher-orig.png" :style "max-width:120px"}]]
-   [:p
-    [:img {:src "img/gopher-fabulous-viking.png" :style "max-width:120px; margin:30px"}]
-    [:img {:src "img/gopher-cptn-death-docker.png" :style "max-width:120px; margin:10px"}]
-    [:img {:src "img/gopher-hipster.png" :style "max-width:120px; margin:30px"}]]])
-
-(def duplications-DRY
-  [:section
-   (note [:div
-          [:p "with only 2 stages times 3 customers we got quite a lot of duplication"]
-          [:p "here we got a face full of very similar yaml"]
-          [:p "bad things like long living feature branches would make this even worse"]])
-   [:img {:src "img/stages-n-customizations.png"}]])
-
-(def DRY-make-point
-  [:section
-   (note [:div
-          [:p "!read! (conclude)"]
-          [:p "!transition! so how can we get it right? let's start with templates"]])
-   [:h4  "My point here is..."]
-   [:h3 "DRY"]])
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;   END OF PROBLEM SPACE PART      ;;;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-(def templates-tools-overview
+(def pf30-nutshell
   [:section
    (note
-     [:div
-      [:p "let's have a look at templates"]
-      [:p "templates consist of the original file modified by replacing values with placeholders"]
-      [:p "we feed values back into the template and have our customized config"]])
-   [:h3 "templates"]
-   [:h5  {:class "fragment"} "tools"]
+     [:ul
+      [:li "Provide Source2Whatever Workflows"]
+      [:li "As before: Set of Supported Services"]
+      [:li "Workflows require tight Integrations"]
+      [:li "Workflows require Extension Points"]
+      [:li "Workflows require DevTools"]
+      [:li "Sort of 'Managed Knative'"]
+      [:li "Sort of 'Evolved OpenShift'"]])
+
+   [:h3 "'PF-3.0' in a nutshell"]
+   [:h5 "kinda why we're here :D"]
    (bulletpoints
-     ["helm (go templates)"
-      "kapitan (jsonnet / jinja2 / kadet)"])])
+     ["Source2Whatever Workflows"
+      "Set of Supported Services"
+      "Tight Integrations"
+      "Extension Points"
+      "DevTools"
+      "Sort of 'Managed Knative'"
+      "Sort of 'Evolved OpenShift'"])])
 
-(def templates-by-helm-example
+(def provided-servcies-1
   [:section
-   (note [:div
-          [:p "when helm chart new -> matches author's requirements -> little to no templating"]
-          [:p "the longer it lives -> more templating -> until it's more like:"]
-          [:p "i dont like the k8s api specs, let me put the config into a flat K/V-map trololol"]]) ; TODO this should be a slide with example and grumpy face/cat
-   [:h3 "Templates (Helm example)"]
-   [:pre
-    "apiVersion: v1\nkind: Service\nmetadata:\n  name: {{ template \"minecraft.fullname\" . }}\n  labels:\n    app: {{ template \"minecraft.fullname\" . }}\n    chart: \"{{ .Chart.Name }}-{{ .Chart.Version }}\"\n    release: \"{{ .Release.Name }}\"\n    heritage: \"{{ .Release.Service }}\"\nspec:\n  type: {{ .Values.minecraftServer.serviceType }}\n  ports:\n  - name: minecraft\n    port: 25565\n    targetPort: minecraft\n    protocol: TCP\n  selector:\n    app: {{ template \"minecraft.fullname\" . }}"]])
-   ;[:code {:class "hljs" :data-trim "" :data-noescape ""} "apiVersion: v1\nkind: Service\nmetadata:\n  name: {{ template \"minecraft.fullname\" . }}\n  labels:\n    app: {{ template \"minecraft.fullname\" . }}\n    chart: \"{{ .Chart.Name }}-{{ .Chart.Version }}\"\n    release: \"{{ .Release.Name }}\"\n    heritage: \"{{ .Release.Service }}\"\nspec:\n  type: {{ .Values.minecraftServer.serviceType }}\n  ports:\n  - name: minecraft\n    port: 25565\n    targetPort: minecraft\n    protocol: TCP\n  selector:\n    app: {{ template \"minecraft.fullname\" . }}"]]
+   [:h3]])
 
-(def templating-at-microsvc-demo
+(def provided-servcies-summary
   [:section
-   (note
-     [:div
-      [:p "sockshop: not that much templating"]
-      [:p "gitea: one fat template"]
-      [:pre "cd ~/git/sips/microservices-demo/deploy/kubernetes/helm-chart/templates"]
-      [:pre "grep '{{' *"]
-      [:pre "cd ~/git/sips/gitea-helm-chart/templates/gitea"]])
-   [:h3 "example-config"]
-   [:h4 "(sockshop / gitea)"]])
+   [:h4 "provided  services - summary"]
+   (table [[["Build / CI / (CD)"] ["Tekton, Kaniko, Bot(s), (CI-Tool)"]]
+           [["Dev-Tools / CD"] ["TBD: Scaffold, Keptn"]]
+           [["Platform Services"] [[:ul {:style "list-style-type: none"}
+                                        [:li "as before but better integration"]
+                                        [:li "(code centric)"]]]]
+           [["log aggregation"] ["ELK"]]
+           [["Identity / Role Mgmt"] ["Keycloak, (OpenLDAP)"]]
+           [["maybe: app catalog"] ["kubeapp"]]
+           [["maybe: chat"] ["mattermost or zulip"]]
+           [["maybe: better support-tool"] ["never stop dreaming"]]])])
 
-(def template-downsides
-  [:section
-   (note [:ul
-          [:li "manifests -> upgrades"]
-          [:li "values -> copy/pasta vs inventory"]])
-
-   [:h3 "downsides of templating"]
-   (bulletpoints
-     ["we need to template (change) the manifests"
-      "we need to provide the values"])])
-
-(def what-we-want
-  [:section
-   (note
-     [:p
-      [:ul
-       [:li "DRY - check"]
-       [:li "ez upgrades -> this goal is pushing us away from templates"]
-       [:li "ez upgrades -> no path-overlap with upstream"]
-       [:li "inventory=what makes app instances special"]
-       [:li "inventory=management of values -> DRY! -> kapitan(reclass)"]
-       [:li "but let's move on to the main problem and its solution"]]
-      "next: can we apply templating to all our apps and workflows?"])
-   [:h3 "recap: Templates"]
-   (bulletpoints
-     ["DRY"
-      "Easy upgrades"
-      "Inventory (what makes app instances special)"])])
-
-(def types-of-applications
-  [:section
-   (note
-     [:p "!start! can we apply templating to all our apps and workflows?"
-      [:ul
-       [:li "Bespoke: 'build yourself', origins in clothing industry"]
-       [:li "COTS: eg. Products from Atlassian stack"]]])
-   [:h3 "kinds of apps and workflows"]
-   (bulletpoints
-     ["bespoke apps"
-      "Common Off-The-Shelf (COTS) apps"])])
-
-(def reconcile-updates
-  [:section
-   [:img {:src "img/ship-reconciling-updates.png"}]])
-
-(def patches-dont-change-that-much
-  [:section
-   [:img {:src "img/ship-patches-dont-change-that-much.png"}]])
-
-(def dont-fork-patch
-  [:section
-   [:img {:src "img/ship-dontfork-patch.png"}]])
-
-(def kustomize
-  [:section
-   [:h3 "kustomize"]
-   (bulletpoints
-     ["templating without placeholders"
-      "kustomize knows where to put the values"
-      "this ain't templating !!!11"
-      "...that's a good thing :-)"])])
-
-(def kustomize-examples-1
-  [:section
-   (note
-     [:div
-      [:p "gitea: from master to kustomize branch "]
-      [:pre "cd ~/git/sips/gitea-helm-chart/templates/gitea"]
-      [:pre "kb kustomize "]])
-   [:h3 "kustomize example/demo"]
-   [:h4 "(gitea)"]])
-
-(def patch-tools
-  [:section
-   [:h3 "patch tools"]
-   (bulletpoints
-     ["kustomize"
-      "helm template"
-      [:a {:href "https://github.com/replicatedhq/ship"} "Ship"]])])
-
-(def ship-screeny
-  [:section
-   {:data-background-image "img/ship-screeny.png" :data-background-size "contain"}
-   [:p " "]])
-
-(def workflows-bespoke
-  [:section
-   {:data-background-image "img/workflowBespoke.jpg" :data-background-size "contain"}
-   [:p " "]])
-
-(def workflows-cots
-  [:section
-   {:data-background-image "img/workflowOts.jpg" :data-background-size "contain"}
-   [:p " "]])
-
-; TODO operators
-; TODO operators for stateful apps with complex operations tasks that'd normally require a human interaction.
-; TODO (take stuff from todo.md regarding operators)
-
-; TODO kkthxbye page with twitter-handle / gh-page & acc / bearingpoint we're hiring
 
 (defn all
   "Add here all slides you want to see in your presentation."
   []
   [title-slide
    intro-myself
-   intro-2
-   intro-positive
-   intro-of-resources-and-objects
-   controller-first-encounter
-   controllers-alien-meme
-   controllers-simplified
-   imparative-vs-declarative-recap
-   imparative-vs-declarative-4
-   sounds-ez-another-recap
-   fun-begins-DRY
-   fun-begins-DRY-2
-   duplications-DRY
-   DRY-make-point
-   templates-tools-overview
-   templates-by-helm-example
-   templating-at-microsvc-demo
-   template-downsides
-   what-we-want
-   types-of-applications
-   reconcile-updates
-   patches-dont-change-that-much
-   dont-fork-patch
-   kustomize
-   kustomize-examples-1
-   patch-tools
-   ship-screeny
-   workflows-bespoke
-   workflows-cots
+   what-we-do-present
+   current-idea
+   pf30-nutshell
+   ;provided-servcies-1
+   provided-servcies-summary
+
    intro-myself])

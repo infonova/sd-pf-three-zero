@@ -13,7 +13,7 @@ pushd target/public
 git init
 git add .
 git commit -m "update gh-pages"
-git push -f https://github.com/kazesberger/sd-cfg-mgmt-k8s.git master:gh-pages
+git push -f https://github.com/infonova/sd-pf-three-zero.git master:gh-pages
 
 rm -rf .git
 
